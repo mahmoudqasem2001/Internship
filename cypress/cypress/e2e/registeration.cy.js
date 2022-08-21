@@ -1,4 +1,17 @@
 /// <reference types="cypress" />
+import {
+  locators,
+  visitURL,
+  click,
+  type,
+  checkEmailMessageError,
+  checkURL,
+  checkRedColorError,
+  fillOptionalFields,
+  checkIfErrorShown,
+  checkErrorTypeVisable,
+  fillRequiredFields
+} from '../support/registration_helper';
 
 
 Cypress.on('uncaught:exception', (err, runnable) => {
@@ -8,236 +21,106 @@ Cypress.on('uncaught:exception', (err, runnable) => {
 describe('Registeration page', () => {
 
   before('go to sign-in page', () => {
-    cy.visit('http://automationpractice.com/index.php')
-    cy.get('a')
-      .contains('Sign in')
-      .click({ force: true })
+    visitURL('http://automationpractice.com/index.php')
+    click(locators.sign_in_btn)
   })
 
   it('Registration with invalid Email', () => {
     //--------Email without "@" char-----------//
-    cy.get('#email_create')
-      .clear({force: true})
-      .type('sampleUser4gmail.com')
-    cy.get('#SubmitCreate > span')
-      .click({force: true})
-    cy.wait(15000)
-    cy.get('#email_create')
-      .should('have.css', 'color', 'rgb(241, 51, 64)')
-    cy.get('.alert')
-      .should('be.visible', { timeout: 100000 })
-    cy.get('li')
-      .contains('Invalid email address')
-      .should('be.visible')
+    type(locators.email, 'sampleUser4gmail.com')
+    click(locators.submitEmail_btn)
+    checkEmailMessageError();
     //--------Email without dot --------------//
-    cy.get('#email_create')
-      .clear({force: true})
-      .type('sampleUser4@gmailcom')
-    cy.get('#SubmitCreate > span')
-      .click({force: true})
-    cy.wait(15000)
-    cy.get('#email_create')
-      .should('have.css', 'color', 'rgb(241, 51, 64)')
-    cy.get('.alert')
-      .should('be.visible', { timeout: 100000 })
-    cy.get('li')
-      .contains('Invalid email address')
-      .should('be.visible')
+    type(locators.email, 'sampleUser4@gmailcom')
+    checkEmailMessageError();
+    click(locators.submitEmail_btn)
     //----------Email without name------//
-    cy.get('#email_create')
-      .clear({force: true})
-      .type('@gmail.com')
-    cy.get('#SubmitCreate > span')
-      .click({force: true})
-    cy.wait(15000)
-    cy.get('#email_create')
-      .should('have.css', 'color', 'rgb(241, 51, 64)')
-    cy.get('.alert')
-      .should('be.visible', { timeout: 100000 })
-    cy.get('li')
-      .contains('Invalid email address')
-      .should('be.visible')
+    type(locators.email, '@gmail.com')
+    checkEmailMessageError();
+    click(locators.submitEmail_btn)
   })
 
   it('Registration with valid Email', () => {
-    cy.get('#email_create')
-      .clear({force: true})
-      .type('sampleUser7@gmail.com')
-    cy.get('#SubmitCreate > span')
-      .click({force: true})
-    cy.wait(15000)
-    cy.url({ timeout: 10000 })
-      .should('eq', 'http://automationpractice.com/index.php?controller=authentication&back=my-account#account-creation')
-
+    type(locators.email, 'sampleUser7@gmail.com')
+    click(locators.submitEmail_btn)
+    checkURL('http://automationpractice.com/index.php?controller=authentication&back=my-account#account-creation')
   })
 
   it('Verify Clicking on required fields without filling them', () => {
-    cy.get('#customer_firstname')
-      .click({force: true})
-    cy.get('body')
-      .click({ force: true })
-    cy.get('#customer_firstname')
-      .should('have.css', 'color', 'rgb(241, 51, 64)')
+    click(locators.firstName)
+    click('body')
+    checkRedColorError(locators.firstName)
 
-    cy.get('#customer_lastname')
-      .click({force: true})
-    cy.get('body')
-      .click({ force: true })
-    cy.get('#customer_lastname')
-      .should('have.css', 'color', 'rgb(241, 51, 64)')
 
-    cy.get('#passwd')
-      .click({force: true})
-    cy.get('body')
-      .click({ force: true })
-    cy.get('#passwd')
-      .should('have.css', 'color', 'rgb(241, 51, 64)')
+    click(locators.lastName)
+    click('body')
+    checkRedColorError(locators.lastName)
+
+    click(locators.password)
+    click('body')
+    checkRedColorError(locators.password)
+
   })
 
   it('Registration with invalid phone number ', () => {
-    cy.get('#phone_mobile')
-      .type('hhhh')
-      .should('have.value', 'hhhh')
-    cy.get('#submitAccount > span')
-      .click({force: true})
-    cy.wait(10000)
-    cy.get('.alert')
-      .should('exist')
-      .should('be.visible')
-    cy.get('li')
-      .contains("phone_mobile is invalid")
-      .should('be.visible')
-
+    type(locators.mobile_phone, 'abcd')
+    click(locators.submitAccount_btn)
+    checkIfErrorShown()
+    checkErrorTypeVisable(locators.phone_number)
   })
 
   it('Registration with invalid password', () => {
-    cy.get('#passwd')
-      .type('1234')
-      .should('have.value', '1234')
-    cy.get('#submitAccount > span')
-      .click({force: true})
-    cy.wait(10000)
-    cy.get('.alert')
-      .should('exist')
-      .should('be.visible')
-    cy.get('li')
-      .contains('passwd is invalid')
-      .should('be.visible')
+    type(locators.password, '123')
+    click(locators.submitAccount_btn)
+    checkIfErrorShown()
+    checkErrorTypeVisable(locators.password)
 
-    cy.get('#passwd')
-      .type('123445678910111211314151617181920212223')
-      .should('have.value', '123445678910111211314151617181920212223')
-    cy.get('#submitAccount > span')
-      .click({force: true})
-    cy.wait(10000)
-    cy.get('.alert')
-      .should('exist')
-      .should('be.visible')
-    cy.get('li')
-      .contains('passwd is too long. Maximum length: 32')
-      .should('be.visible')
-
+    type(locators.password, '123445678910111211314151617181920212223')
+    click(locators.submitAccount_btn)
+    checkIfErrorShown()
+    checkErrorTypeVisable(locators.password)
   })
 
   it('Registration with invalid postal code', () => {
-    cy.get('#postcode')
-      .type('123456')
-      .should('have.value', '123456')
-    cy.get('#submitAccount > span')
-      .click({force: true})
-    cy.wait(10000)
-    cy.get('.alert')
-      .should('exist')
-      .should('be.visible')
-    cy.get('li')
-      .contains("The Zip/Postal code you've entered is invalid. It must follow this format: 00000")
-      .should('be.visible')
-
+    type(locators.postalCode, '1234567')
+    click(locators.submitAccount_btn)
+    checkIfErrorShown()
+    checkErrorTypeVisable(locators.postalCode)
   })
 
   it('Registration without filling required fields', () => {
-    cy.get('#submitAccount > span')
-      .click({force: true})
-    cy.wait(10000)
-    cy.get('.alert')
-      .should('exist')
-      .should('be.visible')
+    click(locators.submitAccount_btn)
+    checkIfErrorShown()
   })
 
   it('Registration without filling required fields and filling optional fields', () => {
-    cy.get('#days')
-      .select('15', { force: true })
-      .should('have.value', '15')
-    cy.get('#months')
-      .select('5', { force: true })
-      .should('have.value', '5')
-    cy.get('#years')
-      .select('1999', { force: true })
-      .should('have.value', '1999')
-    cy.get('#newsletter')
-      .check({force: true})
-      .should('be.checked')
-    cy.get('#optin')
-      .check({force: true})
-      .should('be.checked')
-    cy.get('#company')
-      .type('Exalt')
-      .should('have.value', 'Exalt')
-    cy.get('#other')
-      .type('no other description')
-      .should('have.value', 'no other description')
-    cy.get('#phone')
-      .type('0595129072')
-      .should('have.value', '0595129072')
-    cy.get('#submitAccount > span')
-      .click({force: true})
-    cy.get('.alert')
-      .should('exist')
-      .should('be.visible')
-
+    fillOptionalFields(
+      '15',
+      '5',
+      '1999',
+      'Exalt',
+      'no other description',
+      '0595129072')
+    click(locators.submitAccount_btn)
+    checkIfErrorShown()
   })
 
   it('Registration with filling required fields', () => {
-    cy.get('#customer_firstname')
-      .type('testUser')
-      .should('have.value', 'testUser')
-    cy.get('#customer_lastname')
-      .type('lastTestUser')
-      .should('have.value', 'lastTestUser')
-    cy.get('#email')
-      .should('have.value', 'sampleUser7@gmail.com')
-      .click({force: true})
-      .should('have.css', 'color', 'rgb(156, 155, 155)')
-    cy.get('#passwd')
-      .type('test12345')
-      .should('have.value', 'test12345')
-    cy.get('#address1')
-      .type('NewYork')
-      .should('have.value', 'NewYork')
-    cy.get('#city')
-      .type('panama')
-      .should('have.value', 'panama')
-    cy.get('#id_state')
-      .select(33)
-      .should('have.value', '32')
-    cy.get('#postcode')
-      .clear({force: true})
-      .type('12345')
-      .should('have.value', '12345')
-    cy.get('#id_country')
-      .should('have.value', 21)
-    cy.get('#phone_mobile')
-      .clear({force: true})
-      .type('0599344870')
-      .should('have.value', '0599344870')
-    cy.get('#alias')
-      .clear({force: true})
-      .type('milan')
-      .should('have.value', 'milan')
-    cy.get('#submitAccount > span')
-      .click({force: true})
-    cy.url({ timeout: 10000 })
-      .should('eq', 'http://automationpractice.com/index.php?controller=my-account')
-  })
+    fillRequiredFields(
+      'testUser',
+      'lastTestUser',
+      'sampleUser7@gmail.com',
+      'test12345',
+      'NewYork',
+      'panama',
+      21,
+      '12345',
+      21,
+      '0599344870',
+      'milan'
+      )
+    click(locators.submitAccount_btn)
+    checkURL('http://automationpractice.com/index.php?controller=my-account')
+    })
 
 })
