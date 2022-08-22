@@ -2,12 +2,13 @@
 
 export const URLS = {
     SIGNIN_PAGE_URL: 'http://automationpractice.com/index.php',
-    REGISTER_PAGE_URL: 'http://automationpractice.com/index.php?controller=authentication&back=my-account#account-creation'
-}
+    REGISTER_PAGE_URL: 'http://automationpractice.com/index.php?controller=authentication&back=my-account#account-creation',
+    MY_ACCOUNT_URL: 'http://automationpractice.com/index.php?controller=my-account'
+  }
 export const ERROR_MESSAGES={
     MISS_FILLING_PHONE_NUMBER: "You must register at least one phone number.",
     MISS_FILLING_LAST_NAME: "lastname is required.",
-    MISS_FILLING_LAST_NAME: "firstname is required.",
+    MISS_FILLING_FIRST_NAME: "firstname is required.",
     MISS_FILLING_PASSWORD: "passwd is required.",
     MISS_FILLING_ADDRESS1: "address1 is required.",
     MISS_FILLING_CITY: "city is required.",
@@ -15,11 +16,11 @@ export const ERROR_MESSAGES={
     MISS_SHOOSE_STATE: "This country requires you to choose a State",
     SMALL_PASSWORD:"passwd is invalid.",
     LARGE_PASSWORD:"passwd is too long. Maximum length: 32",
-    INVALID_EMAIL: "Invalid email address"
+    INVALID_EMAIL: "Invalid email address",
+    WRONG_PHONE_NUMBER:"phone_mobile is invalid"
 }
-export const COLORS={
-    RED_ERROR:"rgb(241, 51, 64)"
-}
+export const COLOR="rgb(241, 51, 64)";
+    
 export const LOCATORS = {
     submitEmailBtn: '#SubmitCreate > span',
     signInBtn: '.login',
@@ -51,90 +52,124 @@ export const goToRegistrationPage = (url) => {
     cy.get(LOCATORS.signInBtn)
       .click({force: true})
 }
-//can make it general??
-export const checkEmailMessageError = (inputLocator) => {
-    cy.wait(10000)
-    cy.get(inputLocator)
-      .should('have.css', 'color', COLORS.RED_ERROR)
-    cy.get(LOCATORS.alert)
-      .should('be.visible', { timeout: 100000 })
-    cy.get('li')
-      .contains(ERROR_MESSAGES.INVALID_EMAIL)
-      .should('be.visible')
-}
-export const inputTextField = (textFieldLocator, text) => {
+export const enterTextFieldValue = (textFieldLocator, text) => {
     cy.get(textFieldLocator)
       .clear({ force: true })
       .type(text)
       .should('have.value', text)
 }
-
 export const checkUrl = (url) => {
     cy.url({ timeout: 20000 })
       .should('eq', url)
 
 }
-export const verifyTextFieldColorChanged = (textFieldLocator) => {
+export const verifyTextFieldColorChanged = (textFieldLocator,color) => {
     cy.get(textFieldLocator)
-      .should('have.css', 'color', COLORS.RED_ERROR)
+      .click({force: true})
+    cy.get('body')
+      .click({force: true})
+    cy.get(textFieldLocator)
+      .should('have.css', 'color', color)
 }
 export const selectFromList=(listLocator,value)=>{
     cy.get(listLocator)
       .select(value, { force: true })
       .should('have.value', value)
 }
-export const checkbox=(checkboxLocator)=>{
+export const enableDisableCheckBox=(checkboxLocator,shouldEnable)=>{
+  if(shouldEnable == true){
     cy.get(checkboxLocator)
       .check({ force: true })
       .should('be.checked')
+  }
+  else{
+    cy.get(checkboxLocator)
+      .uncheck({ force: true })
+      .should('not.be.checked')
+  }
 }
-export const fillOptionalFields = (day, month, year, companyName, otherDiscription, homePhone ) => {
-    selectFromList(LOCATORS.daysMenuList,day)
-    selectFromList(LOCATORS.monthsMenuList,month)
-    selectFromList(LOCATORS.yearsMenuList,year)
-    
-    checkbox(LOCATORS.offerCheckbox)
-    checkbox(LOCATORS.newsLetterCheckbox)
+export const fillOptionalFields = (day, month, year, shouldEnableFirstCheckBox, shouldEnableSecondCheckBox ,companyName, otherDiscription, homePhone ) => {
+  if(day != null){
+    selectFromList(LOCATORS.daysMenuList, day)
+  }
+  if(month != null){
+    selectFromList(LOCATORS.monthsMenuList, month)
+  }
+  if(year != null){
+    selectFromList(LOCATORS.yearsMenuList, year)
 
-    inputTextField(LOCATORS.company_name,companyName)
-    inputTextField(LOCATORS.otherDiscription,otherDiscription)
-    inputTextField(LOCATORS.homePhone)
+  }
+  if(shouldEnableFirstCheckBox != null){
+    enableDisableCheckBox(LOCATORS.offerCheckbox, shouldEnableFirstCheckBox)
+  }
+  if(shouldEnableSecondCheckBox != null){
+    enableDisableCheckBox(LOCATORS.newsLetterCheckbox, shouldEnableSecondCheckBox)
+  }
+  if(companyName != null){
+    enterTextFieldValue(LOCATORS.companyName, companyName)
+  }
+  if(otherDiscription != null){
+    enterTextFieldValue(LOCATORS.otherDiscription, otherDiscription)
+  }
+  if(homePhone != null){
+    enterTextFieldValue(LOCATORS.homePhone, homePhone)
+  }
+
 }
-export const verifyAlertShown = () => {
-    cy.get(LOCATORS.alert)
-        .should('exist')
-        .should('be.visible')
+// I wrote this method because I used it many times in spec file
+export const verifyAlertShown = () =>{
+  cy.get(LOCATORS.alert,{timeout:20000})
+    .should('exist')
+    .should('be.visible')
 }
-export const verifyAlertErrorMessage = (inputLocator) => {
+export const verifyAlertErrorMessage = (inputLocator,errorMessage) => {
+    verifyAlertShown()
     if (inputLocator === LOCATORS.password) {
+      if(errorMessage === ERROR_MESSAGES.LARGE_PASSWORD){
         cy.get('li')
-          .contains('passwd')       //How I specify if it long passwd or small??  
+          .contains(ERROR_MESSAGES.LARGE_PASSWORD)       
           .should('be.visible')
-        
+      }
+      else if(errorMessage === ERROR_MESSAGES.SMALL_PASSWORD){
+        cy.get('li')
+          .contains(ERROR_MESSAGES.SMALL_PASSWORD)       
+          .should('be.visible')
+      }
     }
     else if (inputLocator === LOCATORS.postalCode) {
+      if(errorMessage === ERROR_MESSAGES.WRONG_POSTAL_CODE){
         cy.get('li')
           .contains(ERROR_MESSAGES.WRONG_POSTAL_CODE)
           .should('be.visible')
+      }
     }
     else if (inputLocator === LOCATORS.mobilePhone) {
+      if(errorMessage === ERROR_MESSAGES.WRONG_PHONE_NUMBER){
         cy.get('li')
-          .contains(ERROR_MESSAGES.MISS_FILLING_PHONE_NUMBER)
+          .contains(ERROR_MESSAGES.WRONG_PHONE_NUMBER)
           .should('be.visible')
+      }
+    }
+    else if(inputLocator === LOCATORS.email){
+      if(errorMessage === ERROR_MESSAGES.INVALID_EMAIL){
+        cy.get('li')
+          .contains(ERROR_MESSAGES.INVALID_EMAIL)
+          .should('be.visible')
+      }
     }
 }
-export const fillRequiredFields = (firstName, lastName, email, password, address1, city, stateId, postalCode, countryId, mobilePhone, aliasAddress) => {
-    inputTextField(LOCATORS.firstName,firstName)
-    inputTextField(LOCATORS.lastName,lastName)
-    inputTextField(LOCATORS.password,password)
-    inputTextField(LOCATORS.address1,address1)
-    inputTextField(LOCATORS.city,city)
+export const fillRequiredFields = (firstName, lastName, password, address1, city, stateId, postalCode, countryId, mobilePhone, aliasAddress) => {
+    enterTextFieldValue(LOCATORS.firstName,firstName)
+    enterTextFieldValue(LOCATORS.lastName,lastName)
+    enterTextFieldValue(LOCATORS.password,password)
+    enterTextFieldValue(LOCATORS.address1,address1)
+    enterTextFieldValue(LOCATORS.city,city)
     selectFromList(LOCATORS.stateId,stateId)
-    inputTextField(LOCATORS.postalCode,postalCode)
+    enterTextFieldValue(LOCATORS.postalCode,postalCode)
     cy.get(LOCATORS.countryId)            //By Default there is no other choice to choose 
       .should('have.value', countryId)
-    inputTextField(LOCATORS.mobilePhone,mobilePhone)
-    inputTextField(LOCATORS.aliasAddress,aliasAddress)
+    enterTextFieldValue(LOCATORS.mobilePhone,mobilePhone)
+    enterTextFieldValue(LOCATORS.aliasAddress,aliasAddress)
 }
 
 
