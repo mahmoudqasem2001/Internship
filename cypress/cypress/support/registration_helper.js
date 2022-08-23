@@ -52,12 +52,16 @@ export const goToRegistrationPage = (url) => {
     cy.get(LOCATORS.signInBtn)
       .click({force: true})
 }
-export const enterTextFieldValue = (textFieldLocator, text) => {
+export const enterTextFieldValue = (textFieldLocator, text, submitBtnLocator, shouldClickOnSubmit) => {
     cy.get(textFieldLocator)
       .clear({ force: true })
       .type(text)
       .should('have.value', text)
-}
+  if(shouldClickOnSubmit == true){
+      cy.get(submitBtnLocator)
+        .click({force: true})
+    }
+  }
 export const checkUrl = (url) => {
     cy.url({ timeout: 20000 })
       .should('eq', url)
@@ -114,16 +118,17 @@ export const fillOptionalFields = (day, month, year, shouldEnableFirstCheckBox, 
   if(homePhone != null){
     enterTextFieldValue(LOCATORS.homePhone, homePhone)
   }
+  
+}
 
-}
-// I wrote this method because I used it many times in spec file
-export const verifyAlertShown = () =>{
-  cy.get(LOCATORS.alert,{timeout:20000})
-    .should('exist')
-    .should('be.visible')
-}
-export const verifyAlertErrorMessage = (inputLocator,errorMessage) => {
-    verifyAlertShown()
+export const verifyAlertErrorMessage = (inputLocator,errorMessage, submitBtnLocator, shouldClickOnSubmit) => {
+  if(shouldClickOnSubmit == true){
+    cy.get(submitBtnLocator)
+    .click({force: true})
+  }
+    cy.get(LOCATORS.alert,{timeout:20000})
+      .should('exist')
+      .should('be.visible')    
     if (inputLocator === LOCATORS.password) {
       if(errorMessage === ERROR_MESSAGES.LARGE_PASSWORD){
         cy.get('li')
@@ -166,10 +171,12 @@ export const fillRequiredFields = (firstName, lastName, password, address1, city
     enterTextFieldValue(LOCATORS.city,city)
     selectFromList(LOCATORS.stateId,stateId)
     enterTextFieldValue(LOCATORS.postalCode,postalCode)
-    cy.get(LOCATORS.countryId)            //By Default there is no other choice to choose 
+    cy.get(LOCATORS.countryId)             
       .should('have.value', countryId)
     enterTextFieldValue(LOCATORS.mobilePhone,mobilePhone)
     enterTextFieldValue(LOCATORS.aliasAddress,aliasAddress)
+    cy.get(LOCATORS.submitAccountBtn)
+      .click({force: true})
 }
 
 
