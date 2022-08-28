@@ -1,85 +1,114 @@
 /// <reference types="cypress" />
 
-import {
-  URLS,
-  ERROR_MESSAGES,
-  COLOR,
-  LOCATORS,
-  goToRegistrationPage,
-  enterTextFieldValue,
-  checkUrl,
-  verifyTextFieldColorChanged,
-  selectFromList,
-  enableDisableCheckBox,
-  fillOptionalFields,
-  verifyAlertErrorMessage,
-  fillRequiredFields
-} from '../support/registration_helper';
-
+import * as registrationHelper from '../support/registration_helper';
 
 Cypress.on('uncaught:exception', (err, runnable) => {
   return false
 })
 
+let validEmail='sampleUser8@gmail.com';
+
+const INVALID_INPUTS={
+  EMAIL_WITHOUT_AT_SIGN: 'sampleUser4gmail.com',
+  EMAIL_WITHOUT_DOT: 'sampleUser4@gmailcom',
+  EMAIL_WITHOUT_NAME: '@gmail.com',
+  INVALID_PHONE_NUMBER:'abcd',
+  LONG_PASSWORD:'123445678910111211314151617181920212223',
+  SHORT_PASSWORD:'123',
+  INVALID_POSTAL_CODE:'1234567',
+}
+let userInformationOptionalFieldsOnly={
+  birthDay: '15',
+  birthMonth:'5',
+  birthYear:'1995',
+  shouldEnableFirstCheckBox:true ,
+  shouldEnableSecondCheckBox:true,
+  companyName:'Exalt',
+  otherDiscription:'Nothing',
+  homePhone:'0599344880'
+}
+let userInformationRequiredFileds={
+  firstName: 'Mahmoud',
+  lastName: 'Khaled',
+  password: 'mahmood12345',
+  address1: 'NewYork',
+  city: 'panama',
+  stateId: '21',
+  postalCode: '12345',
+  mobilePhone: '0599344870',
+  aliasAddress: 'milan'
+}
 describe('Registeration page', () => {
 
   before('go to sign-in page', () => {
-    goToRegistrationPage(URLS.SIGNIN_PAGE_URL)
+    registrationHelper.goToRegistrationPage(registrationHelper.URLS.SIGNIN_PAGE_URL)
   })
 
   it('Registration with invalid Email', () => {
-    //--------Email without "@" char-----------//
-    enterTextFieldValue(LOCATORS.email, 'sampleUser4gmail.com')
-    verifyAlertErrorMessage(LOCATORS.email,ERROR_MESSAGES.INVALID_EMAIL,LOCATORS.submitEmailBtn,true);
-    //--------Email without dot --------------//
-    enterTextFieldValue(LOCATORS.email, 'sampleUser4@gmailcom')
-    verifyAlertErrorMessage(LOCATORS.email,ERROR_MESSAGES.INVALID_EMAIL,LOCATORS.submitEmailBtn,true);
-    //----------Email without name------//
-    enterTextFieldValue(LOCATORS.email, '@gmail.com')
-    verifyAlertErrorMessage(LOCATORS.email,ERROR_MESSAGES.INVALID_EMAIL,LOCATORS.submitEmailBtn,true);
+    registrationHelper.enterTextFieldValue(registrationHelper.LOCATORS.email,INVALID_INPUTS.EMAIL_WITHOUT_AT_SIGN)
+    registrationHelper.clickOnButton(registrationHelper.LOCATORS.submitEmailBtn)
+    registrationHelper.verifyAlertErrorMessage(registrationHelper.ERROR_MESSAGES.INVALID_EMAIL);
+
+    registrationHelper.enterTextFieldValue(registrationHelper.LOCATORS.email, INVALID_INPUTS.EMAIL_WITHOUT_DOT)
+    registrationHelper.clickOnButton(registrationHelper.LOCATORS.submitEmailBtn)
+    registrationHelper.verifyAlertErrorMessage(registrationHelper.ERROR_MESSAGES.INVALID_EMAIL);
+
+    registrationHelper.enterTextFieldValue(registrationHelper.LOCATORS.email,INVALID_INPUTS.EMAIL_WITHOUT_NAME)
+    registrationHelper.clickOnButton(registrationHelper.LOCATORS.submitEmailBtn)
+    registrationHelper.verifyAlertErrorMessage(registrationHelper.ERROR_MESSAGES.INVALID_EMAIL);
   })
 
   it('Registration with valid Email', () => {
-    enterTextFieldValue(LOCATORS.email, 'sampleUser7@gmail.com',LOCATORS.submitEmailBtn,true)
-    checkUrl(URLS.REGISTER_PAGE_URL)
+    registrationHelper.enterTextFieldValue(registrationHelper.LOCATORS.email, validEmail)
+    registrationHelper.clickOnButton(registrationHelper.LOCATORS.submitEmailBtn)
+    registrationHelper.checkUrl(registrationHelper.URLS.REGISTER_PAGE_URL)
   })
 
   it('Verify Clicking on required fields without filling them', () => {
-    verifyTextFieldColorChanged(LOCATORS.firstName,COLOR)
-    verifyTextFieldColorChanged(LOCATORS.lastName,COLOR)
-    verifyTextFieldColorChanged(LOCATORS.password,COLOR)
+    registrationHelper.verifyTextFieldColorChanged(registrationHelper.LOCATORS.firstName,registrationHelper.RED_COLOR)
+    registrationHelper.verifyTextFieldColorChanged(registrationHelper.LOCATORS.lastName,registrationHelper.RED_COLOR)
+    registrationHelper.verifyTextFieldColorChanged(registrationHelper.LOCATORS.password,registrationHelper.RED_COLOR)
   })
 
   it('Registration with invalid phone number ', () => {
-    enterTextFieldValue(LOCATORS.mobilePhone, 'abcd')
-    verifyAlertErrorMessage(LOCATORS.mobilePhone,ERROR_MESSAGES.WRONG_PHONE_NUMBER,LOCATORS.submitAccountBtn,true)
+    registrationHelper.enterTextFieldValue(registrationHelper.LOCATORS.mobilePhone, INVALID_INPUTS.INVALID_PHONE_NUMBER)
+    registrationHelper.clickOnButton(registrationHelper.LOCATORS.submitAccountBtn)
+      registrationHelper.verifyAlertErrorMessage(registrationHelper.ERROR_MESSAGES.WRONG_PHONE_NUMBER)
+
   })
 
   it('Registration with invalid password', () => {
-    enterTextFieldValue(LOCATORS.password, '123445678910111211314151617181920212223')   
-    verifyAlertErrorMessage(LOCATORS.password,ERROR_MESSAGES.LARGE_PASSWORD,LOCATORS.submitAccountBtn,true)
-    
-    enterTextFieldValue(LOCATORS.password, '123')  
-    verifyAlertErrorMessage(LOCATORS.password,ERROR_MESSAGES.SMALL_PASSWORD,LOCATORS.submitAccountBtn,true)
+    registrationHelper.enterTextFieldValue(registrationHelper.LOCATORS.password, INVALID_INPUTS.LONG_PASSWORD)   
+    registrationHelper.clickOnButton(registrationHelper.LOCATORS.submitAccountBtn)
+    registrationHelper.verifyAlertErrorMessage(registrationHelper.ERROR_MESSAGES.LARGE_PASSWORD)
+
+    registrationHelper.enterTextFieldValue(registrationHelper.LOCATORS.password, INVALID_INPUTS.SHORT_PASSWORD)  
+    registrationHelper.clickOnButton(registrationHelper.LOCATORS.submitAccountBtn)
+    registrationHelper.verifyAlertErrorMessage(registrationHelper.ERROR_MESSAGES.SMALL_PASSWORD)
   })
 
   it('Registration with invalid postal code', () => {
-    enterTextFieldValue(LOCATORS.postalCode, '1234567')
-    verifyAlertErrorMessage(LOCATORS.postalCode,ERROR_MESSAGES.WRONG_POSTAL_CODE,LOCATORS.submitAccountBtn,true)
+    registrationHelper.enterTextFieldValue(registrationHelper.LOCATORS.postalCode, INVALID_INPUTS.INVALID_POSTAL_CODE)
+    registrationHelper.clickOnButton(registrationHelper.LOCATORS.submitAccountBtn)
+    registrationHelper.verifyAlertErrorMessage(registrationHelper.ERROR_MESSAGES.WRONG_POSTAL_CODE)
+
   })
 
-  it('Registration without filling required fields', () => {
-    verifyAlertErrorMessage('','',LOCATORS.submitAccountBtn,true)
+  it('Registration without filling any field', () => {
+    registrationHelper.clickOnButton(registrationHelper.LOCATORS.submitAccountBtn)
+    registrationHelper.verifyAlertErrorMessage(registrationHelper.ERROR_MESSAGES.MISS_FILLING_REQIURED_FIELDS)
   })
 
-  it('Registration without filling required fields and filling optional fields', () => {
-    fillOptionalFields('15', '5', '1999', true, true, 'Exalt', 'no other description', '0595129072')
-    verifyAlertErrorMessage('','',LOCATORS.submitAccountBtn,true)
+  it('Registration with filling optional fields only', () => {
+    registrationHelper.fillUserInformation(userInformationOptionalFieldsOnly)
+    registrationHelper.clickOnButton(registrationHelper.LOCATORS.submitAccountBtn)
+    registrationHelper.verifyAlertErrorMessage(registrationHelper.ERROR_MESSAGES.MISS_FILLING_REQIURED_FIELDS)
   })
 
-  it('Registration with filling required fields', () => {
-    fillRequiredFields('testUser', 'lastTestUser', 'test12345', 'NewYork', 'panama', '21', '12345', '21', '0599344870', 'milan')
-    checkUrl(URLS.MY_ACCOUNT_URL)
+  it.skip('Registration with filling required fields', () => {
+    registrationHelper.fillUserInformation(userInformationRequiredFileds)
+    registrationHelper.clickOnButton(registrationHelper.LOCATORS.submitAccountBtn)
+    registrationHelper.checkUrl(registrationHelper.URLS.MY_ACCOUNT_URL)
     })
 
 })

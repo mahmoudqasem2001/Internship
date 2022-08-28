@@ -17,9 +17,10 @@ export const ERROR_MESSAGES={
     SMALL_PASSWORD:"passwd is invalid.",
     LARGE_PASSWORD:"passwd is too long. Maximum length: 32",
     INVALID_EMAIL: "Invalid email address",
-    WRONG_PHONE_NUMBER:"phone_mobile is invalid"
+    WRONG_PHONE_NUMBER:"phone_mobile is invalid",
+    MISS_FILLING_REQIURED_FIELDS: 'There are 8 errors'
 }
-export const COLOR="rgb(241, 51, 64)";
+export const RED_COLOR="rgb(241, 51, 64)";
     
 export const LOCATORS = {
     submitEmailBtn: '#SubmitCreate > span',
@@ -49,18 +50,13 @@ export const LOCATORS = {
 }
 export const goToRegistrationPage = (url) => {
     cy.visit(url)
-    cy.get(LOCATORS.signInBtn)
-      .click({force: true})
+    clickOnButton(LOCATORS.signInBtn)
 }
-export const enterTextFieldValue = (textFieldLocator, text, submitBtnLocator, shouldClickOnSubmit) => {
+export const enterTextFieldValue = (textFieldLocator, text) => {
     cy.get(textFieldLocator)
       .clear({ force: true })
       .type(text)
       .should('have.value', text)
-  if(shouldClickOnSubmit == true){
-      cy.get(submitBtnLocator)
-        .click({force: true})
-    }
   }
 export const checkUrl = (url) => {
     cy.url({ timeout: 20000 })
@@ -92,91 +88,74 @@ export const enableDisableCheckBox=(checkboxLocator,shouldEnable)=>{
       .should('not.be.checked')
   }
 }
-export const fillOptionalFields = (day, month, year, shouldEnableFirstCheckBox, shouldEnableSecondCheckBox ,companyName, otherDiscription, homePhone ) => {
-  if(day != null){
-    selectFromList(LOCATORS.daysMenuList, day)
-  }
-  if(month != null){
-    selectFromList(LOCATORS.monthsMenuList, month)
-  }
-  if(year != null){
-    selectFromList(LOCATORS.yearsMenuList, year)
 
-  }
-  if(shouldEnableFirstCheckBox != null){
-    enableDisableCheckBox(LOCATORS.offerCheckbox, shouldEnableFirstCheckBox)
-  }
-  if(shouldEnableSecondCheckBox != null){
-    enableDisableCheckBox(LOCATORS.newsLetterCheckbox, shouldEnableSecondCheckBox)
-  }
-  if(companyName != null){
-    enterTextFieldValue(LOCATORS.companyName, companyName)
-  }
-  if(otherDiscription != null){
-    enterTextFieldValue(LOCATORS.otherDiscription, otherDiscription)
-  }
-  if(homePhone != null){
-    enterTextFieldValue(LOCATORS.homePhone, homePhone)
-  }
-  
-}
-
-export const verifyAlertErrorMessage = (inputLocator,errorMessage, submitBtnLocator, shouldClickOnSubmit) => {
-  if(shouldClickOnSubmit == true){
-    cy.get(submitBtnLocator)
+export const clickOnButton =(locatorForSubmitBtn)=>{
+  cy.get(locatorForSubmitBtn)
     .click({force: true})
-  }
+}
+export const verifyAlertErrorMessage = (errorMessage) => {
     cy.get(LOCATORS.alert,{timeout:20000})
       .should('exist')
       .should('be.visible')    
-    if (inputLocator === LOCATORS.password) {
-      if(errorMessage === ERROR_MESSAGES.LARGE_PASSWORD){
-        cy.get('li')
-          .contains(ERROR_MESSAGES.LARGE_PASSWORD)       
-          .should('be.visible')
-      }
-      else if(errorMessage === ERROR_MESSAGES.SMALL_PASSWORD){
-        cy.get('li')
-          .contains(ERROR_MESSAGES.SMALL_PASSWORD)       
-          .should('be.visible')
-      }
-    }
-    else if (inputLocator === LOCATORS.postalCode) {
-      if(errorMessage === ERROR_MESSAGES.WRONG_POSTAL_CODE){
-        cy.get('li')
-          .contains(ERROR_MESSAGES.WRONG_POSTAL_CODE)
-          .should('be.visible')
-      }
-    }
-    else if (inputLocator === LOCATORS.mobilePhone) {
-      if(errorMessage === ERROR_MESSAGES.WRONG_PHONE_NUMBER){
-        cy.get('li')
-          .contains(ERROR_MESSAGES.WRONG_PHONE_NUMBER)
-          .should('be.visible')
-      }
-    }
-    else if(inputLocator === LOCATORS.email){
-      if(errorMessage === ERROR_MESSAGES.INVALID_EMAIL){
-        cy.get('li')
-          .contains(ERROR_MESSAGES.INVALID_EMAIL)
-          .should('be.visible')
-      }
-    }
+
+    cy.get(LOCATORS.alert)
+      .contains(errorMessage)
+      .should('be.visible')
+      
 }
-export const fillRequiredFields = (firstName, lastName, password, address1, city, stateId, postalCode, countryId, mobilePhone, aliasAddress) => {
-    enterTextFieldValue(LOCATORS.firstName,firstName)
-    enterTextFieldValue(LOCATORS.lastName,lastName)
-    enterTextFieldValue(LOCATORS.password,password)
-    enterTextFieldValue(LOCATORS.address1,address1)
-    enterTextFieldValue(LOCATORS.city,city)
-    selectFromList(LOCATORS.stateId,stateId)
-    enterTextFieldValue(LOCATORS.postalCode,postalCode)
-    cy.get(LOCATORS.countryId)             
-      .should('have.value', countryId)
-    enterTextFieldValue(LOCATORS.mobilePhone,mobilePhone)
-    enterTextFieldValue(LOCATORS.aliasAddress,aliasAddress)
-    cy.get(LOCATORS.submitAccountBtn)
-      .click({force: true})
+export const fillUserInformation = (userInformation) => {
+  if(userInformation.firstName){
+    enterTextFieldValue(LOCATORS.firstName,userInformation.firstName)
+  }
+  if(userInformation.lastName){
+    enterTextFieldValue(LOCATORS.lastName,userInformation.lastName)
+  }
+  if(userInformation.password){
+    enterTextFieldValue(LOCATORS.password,userInformation.password)
+  }  
+  if(userInformation.address1){
+    enterTextFieldValue(LOCATORS.address1,userInformation.address1)
+  }
+  if(userInformation.city){
+    enterTextFieldValue(LOCATORS.city,userInformation.city)
+  }
+  if(userInformation.stateId){
+    selectFromList(LOCATORS.stateId,userInformation.stateId)
+  }
+  if(userInformation.postalCode){
+    enterTextFieldValue(LOCATORS.postalCode,userInformation.postalCode)
+  }
+  if(userInformation.mobilePhone){
+    enterTextFieldValue(LOCATORS.mobilePhone,userInformation.mobilePhone)
+  }
+  if(userInformation.aliasAddress){
+    enterTextFieldValue(LOCATORS.aliasAddress,userInformation.aliasAddress)
+  }
+  if(userInformation.birthDay){
+    selectFromList(LOCATORS.daysMenuList,userInformation.birthDay)
+  }
+  if(userInformation.birthMonth){
+    selectFromList(LOCATORS.monthsMenuList,userInformation.birthMonth)
+  }
+  if(userInformation.birthYear){
+    selectFromList(LOCATORS.yearsMenuList,userInformation.birthYear)
+  }
+  if(userInformation.shouldEnableNewsLetterCheckBox){
+    enableDisableCheckBox(LOCATORS.newsLetterCheckbox,userInformation.shouldEnableNewsLetterCheckBox)
+  }
+  if(userInformation.shouldEnableOfferCheckBox){
+    enableDisableCheckBox(LOCATORS.offerCheckbox,userInformation.shouldEnableOfferCheckBox)
+  }
+  if(userInformation.companyName){
+    enterTextFieldValue(LOCATORS.companyName,userInformation.companyName)
+  }
+  if(userInformation.otherDiscription){
+    enterTextFieldValue(LOCATORS.otherDiscription,userInformation.otherDiscription)
+  }
+  if(userInformation.homePhone){
+    enterTextFieldValue(LOCATORS.homePhone,userInformation.homePhone)
+  }
+
 }
 
 
