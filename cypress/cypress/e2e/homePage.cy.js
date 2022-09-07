@@ -7,59 +7,71 @@ Cypress.on('uncaught:exception', (err, runnable) => {
     return false
 })
 
-const CATEGORIES = {
-    WOMEN: {
-        tops: {
-            tshirts: 'T-shirts',
-            Blouses: 'Blouses',
-        },
-        dresses: {
-            casualDresses: 'Casual Dresses',
-            eveningDresses: 'Evening Dresses',
-            summerDresses: 'Summer Dresses',
-        }
-    },
-    DRESSES:'Dresses',
-    T_SHIRTS: 'T-shirts'
+const LOG_IN_INFORMATION={
+    email: "sampleUser7@gmail.com",
+    password: "mahmood12345",
 }
+
 const CATALOGS = {
     categories: {
-        tShirts: 'T-shirts',
-        blouses: 'Blouses'
+        tShirts: true,
+        dresses: false,
+        casualDresses:false,
+        eviningDresses:true,
+        summerDresses:false,
     },
     size: {
-        small: 'S',
-        medium: 'M',
-        larg: 'L'
+        small: true,
+        medium: false,
+        larg: false,
     },
-    color: {
-        white: 'White',
-        black: 'Black'
-    },
+    color: 
+        [
+        '',
+        'White',
+        'Black',
+        '',
+        'Blue',
+        'Green',
+        '',
+        'Pink'
+        ],
     compositions: {
-        cotton: 'Cotton'
+        cotton: false,
+        polyester:true,
+        viscose: false,
     },
     styles: {
-        casual: 'Casual'
+        casual: true,
+        dressy: false,
+        girly: false,
     },
     properties: {
-        shortSlave: 'Short Sleeve'
+        colorfulDress: false,
+        maxiDress: true,
+        midiDress :false,
+        shortDress: false,
+        shortSlave: false,
     },
     availability: {
-        inStock: 'In stock'
+        inStock: false,
     },
     manufacturer: {
-        fashion: 'Fashion Manufacturer'
+        fashion: true,
     },
     condition: {
-        new: 'New'
+        new: true,
     }
 }
 
 describe('Home page', () => {
 
-    before('visit home page', () => {
-        homePageHelper.visitUrl(homePageHelper.URLS.homePage)
+    before('go to login page', () => {
+        homePageHelper.visitsignInPage(homePageHelper.URLS.homePage)
+    })
+    it.only('Valid Login',()=>{
+        homePageHelper.logIn(LOG_IN_INFORMATION.email,LOG_IN_INFORMATION.password)
+        checkUrl(homePageHelper.URLS.myAccountPage)
     })
 
     it("Verify sub menu lists shown ", () => {
