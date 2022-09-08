@@ -14,10 +14,10 @@ const LOG_IN_INFORMATION={
 
 const CATALOGS = {
     categories: {
-        tShirts: true,
+        tops: true,
         dresses: false,
         casualDresses:false,
-        eviningDresses:true,
+        eviningDresses:false,
         summerDresses:false,
     },
     size: {
@@ -25,17 +25,16 @@ const CATALOGS = {
         medium: false,
         larg: false,
     },
-    color: 
-        [
-        '',
-        'White',
-        'Black',
-        '',
-        'Blue',
-        'Green',
-        '',
-        'Pink'
-        ],
+    color:{ 
+       beige: false, 
+       white: true,
+       black: true,
+       orange: false,
+       blue: true,
+       green: false,
+       yellow: false,
+       pink: false,
+    },
     compositions: {
         cotton: false,
         polyester:true,
@@ -66,10 +65,8 @@ const CATALOGS = {
 
 describe('Home page', () => {
 
-    before('go to login page', () => {
+    before('vaild login ', () => {
         homePageHelper.visitsignInPage(homePageHelper.URLS.homePage)
-    })
-    it.only('Valid Login',()=>{
         homePageHelper.logIn(LOG_IN_INFORMATION.email,LOG_IN_INFORMATION.password)
         checkUrl(homePageHelper.URLS.myAccountPage)
     })
@@ -84,16 +81,8 @@ describe('Home page', () => {
         homePageHelper.VerifyGoingTtoSubListPage(homePageHelper.LOCATORS.dressesCategory,CATEGORIES.DRESSES)
     })
 
-    it('Verify enabled filters shown', () => {
-        homePageHelper.checkCatalogBox(CATALOGS.size.small)
-        homePageHelper.verifyEnabledFilterShown(CATALOGS.size.small)
-
-        homePageHelper.checkCatalogBox(CATALOGS.styles.casual)
-        homePageHelper.verifyEnabledFilterShown(CATALOGS.styles.casual)
-
-        homePageHelper.checkCatalogBox(CATALOGS.condition.new)
-        homePageHelper.verifyEnabledFilterShown(CATALOGS.condition.new)
-
+    it.only('Verify enabled filters shown', () => {
+        homePageHelper.verifyEnabledFilterShown(CATALOGS)
     })
 
     it('Verify enable grid mode', () => {

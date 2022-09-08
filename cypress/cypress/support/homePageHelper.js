@@ -20,13 +20,17 @@ export const LOCATORS={
     listViewIcon: '.icon-th-list',
     productDescription: '.product-desc',
     enabledFiltersContainer: '#enabled_filters',
-    catalogsBlock: '#layered_block_left',
     categoryName:'.category-name',
     subCatagory: '.submenu-container',
     email:'#email',
     password:'#passwd',
     signInBtn:'.login',
     submitLogInBtn:'#SubmitLogin',
+    
+}
+
+export const CATALOG_LOCATORS={
+      catalogsBlock: '#layered_block_left',
     catalogSubTitle:'.layered_subtitle',
     topsSubCategoryCheckbox:'#layered_category_4',
     dressesSubCatagoryCheckbox:'#layered_category_8',
@@ -67,7 +71,12 @@ export const CATALOGS_NAME = {
       eviningDresses:'Evining Dresses',
       summerDresses:'Summer Dresses',
   },
-  COLORS: {
+  size: {
+      small: 'S',
+      medium: 'M',
+      larg: 'L'
+  },
+  color: {
     beige:'Beige',
     white:'White',
     black:'Black',
@@ -77,11 +86,7 @@ export const CATALOGS_NAME = {
     yellow:'Yellow',
     pink:'Pink',
   },
-  size: {
-      small: 'S',
-      medium: 'M',
-      larg: 'L'
-  },
+  
   compositions: {
       cotton: 'Cotton',
       polyester:'Polyester',
@@ -133,6 +138,7 @@ export const CATEGORIES = {
   },
   T_SHIRTS: 'T-SHIRTS'
 }
+export const IS_COLOR=true;
 export const visitsignInPage=(homePageurl)=>{
     cy.visit(homePageurl)
     cy.get(LOCATORS.signInBtn)
@@ -176,96 +182,127 @@ export const verifyChangeViewListMode=(viewListIconLocator, shouldBeGrid)=>{
       .should('be.visible')
   }
 }
-export const checkFiltersCatelogeBox=(catalogs)=>{
-      for (let index = 0; index < catalogs.color.length; index++) {
-        const element = array[index];
-        if(element === COLORS.beige){
-          cy.get(LOCATORS.BeigeColorCheckbox)
-            .click({force: true})
-          verifyEnabledFilterShown(COLORS.beige)   
-        }
-        else if(element === COLORS.white){
-          cy.get(LOCATORS.whiteColorCheckbox)
-            .click({force: true})
-          verifyEnabledFilterShown(COLORS.white) 
-        }
-        else if(element === COLORS.black){
-          cy.get(LOCATORS.blackColorCheckbox)
-            .click({force: true})
-          verifyEnabledFilterShown(COLORS.black) 
-        }
-        else if(element === COLORS.orange){
-          cy.get(LOCATORS.orangeColorCheckbox)
-            .click({force: true})
-          verifyEnabledFilterShown(COLORS.orange)
-        }
-        else if(element === COLORS.blue){
-          cy.get(LOCATORS.blueColorCheckbox)
-            .click({force: true})
-          verifyEnabledFilterShown(COLORS.blue)
-        }
-        else if(element === COLORS.green){
-          cy.get(LOCATORS.greenColorCheckbox)
-            .click({force: true})
-          verifyEnabledFilterShown(COLORS.green) 
-        }
-        else if(element === COLORS.yellow){
-          cy.get(LOCATORS.yellowColorCheckbox)
-            .click({force: true})
-          verifyEnabledFilterShown(COLORS.yellow) 
-        }
-        else if(element === COLORS.pink){
-          cy.get(LOCATORS.pinkColorCheckbox)
-            .click({force: true})
-          verifyEnabledFilterShown(COLORS.pink) 
-        }
-      }
-    if(catalogs.categories.tShirts){
-      enableDisablecheckBox(LOCATORS.topsSubCategoryCheckbox,catalogs.categories.tShirts)
-      verifyEnabledFilterShown(CATALOGS_NAME.categories.tShirts)
-    }
-    if(catalogs.categories.dresses){
-      enableDisablecheckBox(LOCATORS.dressesSubCatagoryCheckbox,catalogs.categories.dresses)
-      verifyEnabledFilterShown(CATALOGS_NAME.categories.dresses)
-    }
-    if(catalogs.categories.casualDresses){
-      enableDisablecheckBox(LOCATORS.casualDressesCheckbox,catalogs.categories.casualDresses)
-      verifyEnabledFilterShown(CATALOGS_NAME.categories.casualDresses)
-    }
-    if(catalogs.categories.eviningDresses){
-      enableDisablecheckBox(LOCATORS.eviningDressesCheckbox,catalogs.categories.eveningDresses)
-      verifyEnabledFilterShown(CATALOGS_NAME.categories.eviningDresses)
-    }
-    if(catalogs.categories.summerDresses){
-      enableDisablecheckBox(LOCATORS.summerDressesCheckbox,catalogs.categories.summerDresses)
-      verifyEnabledFilterShown(CATALOGS_NAME.categories.summerDresses)
-    }
-    if(catalogs.size.small){
-      enableDisablecheckBox(LOCATORS.smallSizeCheckbox,catalogs.size.small)
-      verifyEnabledFilterShown(CATALOGS_NAME.size.small)
-    }
-    // cy.get(LOCATORS.catalogsBlock)
-    //   .find('ul')
-    //   .contains(catalogName)
-    //   .parent()
-    //   .prev()
-    //   .find('input')
-    //   .check({force: true})
+export const verifyEnabledFilterShown=(catalog)=>{
+    checkFiltersCatalogeBox(CATALOGS_NAME.categories.tops,catalog.categories.tops)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.categories.tops,catalog.categories.tops)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.categories.dresses,catalog.categories.dresses)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.categories.dresses,catalog.categories.dresses)
+    
+    checkFiltersCatalogeBox(CATALOGS_NAME.categories.casualDresses,catalog.categories.casualDresses)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.categories.casualDresses,catalog.categories.casualDresses)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.categories.eviningDresses,catalog.categories.eviningDresses)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.categories.eviningDresses,catalog.categories.eviningDresses)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.categories.summerDresses,catalog.categories.summerDresses)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.categories.summerDresses,catalog.categories.summerDresses)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.size.small,catalog.size.small)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.size.small,catalog.size.small)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.size.medium,catalog.size.medium)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.size.medium,catalog.size.medium)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.size.larg,catalog.size.larg)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.size.larg,catalog.size.larg)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.color.beige,catalog.color.beige, IS_COLOR)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.color.beige,catalog.color.beige)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.color.white,catalog.color.white, IS_COLOR)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.color.white,catalog.color.white)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.color.black,catalog.color.black, IS_COLOR)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.color.black,catalog.color.black)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.color.orange,catalog.color.orange, IS_COLOR)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.color.orange,catalog.color.orange)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.color.blue,catalog.color.blue, IS_COLOR)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.color.blue,catalog.color.blue)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.color.green,catalog.color.green, IS_COLOR)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.color.green,catalog.color.green)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.color.yellow,catalog.color.yellow, IS_COLOR)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.color.yellow,catalog.color.yellow)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.color.pink,catalog.color.pink, IS_COLOR)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.color.pink,catalog.color.pink)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.compositions.cotton,catalog.compositions.cotton)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.compositions.cotton,catalog.compositions.cotton)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.compositions.polyester,catalog.compositions.polyester)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.compositions.polyester,catalog.compositions.polyester)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.compositions.viscose,catalog.compositions.viscose)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.compositions.viscose,catalog.compositions.viscose)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.styles.casual,catalog.styles.casual)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.styles.casual,catalog.styles.casual)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.styles.dressy,catalog.styles.dressy)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.styles.dressy,catalog.styles.dressy)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.styles.girly,catalog.styles.girly)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.styles.girly,catalog.styles.girly)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.properties.colorfulDress,catalog.properties.colorfulDress)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.properties.colorfulDress,catalog.properties.colorfulDress)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.properties.maxiDress,catalog.properties.maxiDress)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.properties.maxiDress,catalog.properties.maxiDress)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.properties.midiDress,catalog.properties.midiDress)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.properties.midiDress,catalog.properties.midiDress)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.properties.shortDress,catalog.properties.shortDress)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.properties.shortDress,catalog.properties.shortDress)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.properties.shortSlave,catalog.properties.shortSlave)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.properties.shortSlave,catalog.properties.shortSlave)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.availability.inStock,catalog.availability.inStock)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.availability.inStock,catalog.availability.inStock)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.manufacturer.fashion,catalog.manufacturer.fashion)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.manufacturer.fashion,catalog.manufacturer.fashion)
+
+    checkFiltersCatalogeBox(CATALOGS_NAME.condition.new,catalog.condition.new)
+    shouldFilteredCatalogVisible(CATALOGS_NAME.condition.new,catalog.condition.new)
+
+  
 }
-export const enableDisablecheckBox =(checkBoxLocator,shouldEnabled)=>{
-    if(shouldEnabled == true){
-      cy.get(checkBoxLocator)
-        .check({force})
-        .should('be.checked')
+export const checkFiltersCatalogeBox=(catalogName, shouldCheckCatalog, isColor)=>{
+    if(isColor == true){
+      if(shouldCheckCatalog != false){
+        cy.get(CATALOG_LOCATORS.catalogsBlock)
+          .find('ul')
+          .contains(catalogName)
+          .parent()
+          .prev()
+          .click({force: true})
+      }
     }
     else{
-      cy.get(checkBoxLocator)
-        .uncheck({force})
-        .should('not.be.checked')
-    }
+      if(shouldCheckCatalog == true){
+        cy.get(CATALOG_LOCATORS.catalogsBlock)
+          .find('ul')
+          .contains(catalogName)
+          .parent()
+          .prev()
+          .find('input')
+          .check({force: true})
+      }
+    }  
 }
-export const verifyEnabledFilterShown=(filteredCatalogName)=>{
+export const shouldFilteredCatalogVisible=(filterdCatalogName, shouldBeFilterd)=>{
+  //cy.wait(3000)
+  if(shouldBeFilterd == true){
     cy.get(LOCATORS.enabledFiltersContainer)
-      .contains(filteredCatalogName,{timeout: 10000})
+      .contains(filterdCatalogName,{timeout: 10000})
       .should('be.visible')
+  }
 }
