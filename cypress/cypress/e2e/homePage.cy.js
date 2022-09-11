@@ -23,18 +23,14 @@ const CATALOGS = {
     size: {
         small: true,
         medium: false,
-        larg: false,
+        large: false,
     },
-    color:{ 
-       beige: false, 
-       white: true,
-       black: true,
-       orange: false,
-       blue: true,
-       green: false,
-       yellow: false,
-       pink: false,
-    },
+    color:[ 
+        'Beige',
+        'White',
+        'Black',
+        'Orange',
+    ],
     compositions: {
         cotton: false,
         polyester:true,
